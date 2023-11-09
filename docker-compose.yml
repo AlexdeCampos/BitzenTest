@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+    laravel-app:
+        depends_on:
+            - db
+        build: .
+        container_name: "laravel"
+        ports:
+            - "8080:80"
+        volumes:
+            - ./:/usr/share/nginx
+            - ./conf.d:/etc/nginx/conf.d
+        networks:
+            - app-network
+    db:
+        container_name: db
+        image: mysql:5.7.22
+        ports:
+            - "3306:3306"
+        volumes:
+            - .docker/dbdata:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_ROOT_PASSWORD: laravel
+        networks:
+            - app-network
+networks:
+    app-network:
+        driver: bridge
