@@ -1,65 +1,82 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Sobre o projeto
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+API para controle de cadastro de empresas
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Métodos:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   **[Lista de Empresas]('http://127.0.0.1:8080/api/company?page=1&limit=10')**
+    || GET http://127.0.0.1:8080/api/company?page=1&limit=10
+-   **[Busca única de um registro]('http://127.0.0.1:8080/api/company/:id')**
+    || GET http://127.0.0.1:8080/api/company/:id
+-   **[Cadastro de uma empresa]('http://127.0.0.1:8080/api/company/:id')**
+    || POST http://127.0.0.1:8080/api/company/:id
+-   **[Atualização de uma empresa]('http://127.0.0.1:8080/api/company/:id')**
+    || PUT http://127.0.0.1:8080/api/company/:id
+-   **[Deleção de uma empresa]('http://127.0.0.1:8080/api/company/:id')**
+    || DELETE http://127.0.0.1:8080/api/company/:id
 
-## Learning Laravel
+### Retorno da listagem de empresas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```json
+{
+    "page": "1",
+    "total_pages": 1,
+    "curren_view": "1 à 0 de 0",
+    "items": [
+       {
+        "document_number": "",
+        "social_name": "Nove fantasia",
+        "legal_name": "Rasão social",
+        "creation_date": "9999-99-99",
+        "responsible_email": "email@example.com",
+        "responsible_name": "responsável"
+        },...
+    ]
+}
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+### Envio nos métodos de criação e edição
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```json
+{
+    "document_number": "",
+    "social_name": "Nove fantasia",
+    "legal_name": "Rasão social",
+    "creation_date": "9999-99-99",
+    "responsible_email": "email@example.com",
+    "responsible_name": "responsável"
+}
+```
 
-### Premium Partners
+Todos os campos da requisição são obrigatórios.\
+O número de documento é único.\
+Existe uma validação de email.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## Configuração
 
-## Contributing
+Esse projeto pode ser iniciado com o uso ou não do docker.\
+Caso opte por não usar, será necessário ter instalado na máquina tanto php8.1^ quanto Mysql
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+É necessário também possuir o [composer](https://getcomposer.org) instalado.
 
-## Code of Conduct
+Para a primeira configuração é necessário rodar os seguintes comandos no terminal:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+`cp .env.example .env` para copiar o arquivo de configurações de variáveis de ambiente .
 
-## Security Vulnerabilities
+Caso não use o docker, altere as variáveis de conexão do banco de dados para seu ambiente.local.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+`composer install` para fazer a instalação das dependências do projeto.
 
-## License
+Com docker: \
+`docker compose up -d(opcional para liberar o terminal)` esse comando vai iniciar o projeto\
+`docker exec laravel php artisan migrate` esse comando irá criar a tabela de empresas
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# BitzenTest
+Sem docker:
+`php artisan serve` esse comando vai iniciar o projeto\
+`php artisan migrate` esse comando irá criar a tabela de empresas
