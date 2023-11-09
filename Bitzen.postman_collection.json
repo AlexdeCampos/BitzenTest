@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/company?page=1&limit=10&search=Empresa",
+					"raw": "http://127.0.0.1:8080/api/company?page=1&limit=10",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -19,7 +19,7 @@
 						"0",
 						"1"
 					],
-					"port": "8000",
+					"port": "8080",
 					"path": [
 						"api",
 						"company"
@@ -35,7 +35,8 @@
 						},
 						{
 							"key": "search",
-							"value": "Empresa"
+							"value": "",
+							"disabled": true
 						}
 					]
 				}
@@ -48,7 +49,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/company/1",
+					"raw": "http://127.0.0.1:8080/api/company/:id",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -56,11 +57,17 @@
 						"0",
 						"1"
 					],
-					"port": "8000",
+					"port": "8080",
 					"path": [
 						"api",
 						"company",
-						"1"
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "4"
+						}
 					]
 				}
 			},
@@ -73,7 +80,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"document_number\": \"19258530000162\",\n    \"social_name\": \"teste\",\n    \"legal_name\": \"teste\",\n    \"creation_date\": \"2023-11-08\",\n    \"responsible_email\": \"\",\n    \"responsible_name\": \"asdasd\"\n}",
+					"raw": "{\n    \"document_number\": \"45.642.536/0001-49\",\n    \"social_name\": \"teste\",\n    \"legal_name\": \"teste\",\n    \"creation_date\": \"2023-11-08\",\n    \"responsible_email\": \"teste@teste\",\n    \"responsible_name\": \"asdasd\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -81,7 +88,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/company",
+					"raw": "http://127.0.0.1:8080/api/company",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -89,7 +96,7 @@
 						"0",
 						"1"
 					],
-					"port": "8000",
+					"port": "8080",
 					"path": [
 						"api",
 						"company"
@@ -102,7 +109,38 @@
 			"name": "Update Company",
 			"request": {
 				"method": "PUT",
-				"header": []
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"social_name\": \"legalName\",\n    \"legal_name\": \"SocialName\",\n    \"document_number\": \"19258530000162\",\n    \"creation_date\": \"2023-11-08 00:00:00\",\n    \"responsible_email\": \"alex.campos@medprevonline.com\",\n    \"responsible_name\": \"Alex\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/api/company/:id",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"company",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "5"
+						}
+					]
+				}
 			},
 			"response": []
 		},
@@ -110,7 +148,33 @@
 			"name": "Delete Company",
 			"request": {
 				"method": "DELETE",
-				"header": []
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/api/company/:id",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"company",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "4"
+						}
+					]
+				}
 			},
 			"response": []
 		}
