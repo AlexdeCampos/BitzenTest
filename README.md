@@ -76,7 +76,9 @@ Caso não use o docker, altere as variáveis de conexão do banco de dados para 
 Com docker: \
 `docker compose up -d(opcional para liberar o terminal)` esse comando vai iniciar o projeto\
 `docker exec laravel php artisan migrate` esse comando irá criar a tabela de empresas
+`docker exec laravel php artisan key:generate` esse comando vai gerar uma chave de criptografia para o projeto
 
 Sem docker:
 `php artisan serve` esse comando vai iniciar o projeto\
 `php artisan migrate` esse comando irá criar a tabela de empresas
+`php artisan key:generate` esse comando vai gerar uma chave de criptografia para o projeto
