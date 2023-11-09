@@ -59,7 +59,7 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'document_number' => 'required|unique:companies',
+            'document_number' => 'required',
             'social_name' => 'required',
             'legal_name' => 'required',
             'creation_date' => 'required|date',
@@ -76,8 +76,17 @@ class CompanyController extends Controller
         }
 
         $validated = $validator->validated();
+
+        $hasDuplicatedDocument = $this->verifyDuplicatedDocument($validated["document_number"]);
+        if ($hasDuplicatedDocument) {
+            return response()->json([
+                'errors' => true,
+                'message' => 'Já existe uma empresa registrada com o documento enviado.',
+            ], 422);
+        }
+
         $companyData = $this->getCompanyData($validated['document_number']);
-        if ($companyData["type"] && $companyData["type"] == "not_found") {
+        if (isset($companyData["type"]) && $companyData["type"] == "not_found") {
             return response()->json([
                 'errors' => true,
                 'message' => 'Não foi possível validar os dados da empresa, verifique se o CNPJ enviado está correto',
@@ -132,8 +141,9 @@ class CompanyController extends Controller
             ], 404);
         }
 
-        if ($oldCompany->document_number != $validated["document_number"]) {
-            $hasDuplicatedDocument = $this->verifyDuplicatedDocument($validated["document_number"], $id);
+        $cleanDocument = $this->clearNoNNumbers($validated["document_number"]);
+        if ($oldCompany->document_number != $cleanDocument) {
+            $hasDuplicatedDocument = $this->verifyDuplicatedDocument($cleanDocument);
             if ($hasDuplicatedDocument) {
                 return response()->json([
                     'errors' => true,
@@ -177,24 +187,24 @@ class CompanyController extends Controller
 
     private function getCompanyData(string $documentNumber)
     {
-        $response = Http::acceptJson()->get("https://brasilapi.com.br/api/cnpj/v1/$documentNumber");
+        $clearDocumentNumber = $this->clearNoNNumbers($documentNumber);
+        $response = Http::acceptJson()->get("https://brasilapi.com.br/api/cnpj/v1/$clearDocumentNumber");
         return $response;
     }
 
     private function validateCompanyData($company)
     {
-        $primary_cnae = $company["cnae_fiscal"];
+        $primary_cnae = $this->clearNoNNumbers($company["cnae_fiscal"]);
         $secondary_cnae = $company["cnaes_secundarios"];
 
         $hasValidCnae = false;
-        if ($primary_cnae == 4614100) {
-            // if ($primary_cnae == 6202300) {
+        if ($primary_cnae == 6202300) {
             $hasValidCnae = true;
         }
 
         foreach ($secondary_cnae as $cnae) {
-            if ($cnae['codigo'] == 4614100) {
-                // if ($cnae == 6202300) {
+            $cleanCnae = $this->clearNoNNumbers($cnae['codigo']);
+            if ($cleanCnae == 6202300) {
                 $hasValidCnae = true;
             }
         }
@@ -206,7 +216,7 @@ class CompanyController extends Controller
     {
         $newCompany = new Company;
 
-        $newCompany->document_number = $company["document_number"];
+        $newCompany->document_number = $this->clearNoNNumbers($company["document_number"]);
         $newCompany->social_name = $company["social_name"];
         $newCompany->legal_name = $company["legal_name"];
         $newCompany->creation_date = $company["creation_date"];
@@ -217,17 +227,16 @@ class CompanyController extends Controller
         return $newCompany;
     }
 
-    private function verifyDuplicatedDocument(string $documentNumber, string $id)
+    private function verifyDuplicatedDocument(string $documentNumber)
     {
-        $duplicatedCompany = Company::where('id', '!=', $id)
-            ->andWhere('document_number', $documentNumber)
-            ->first();
+        $cleanDocument = $this->clearNoNNumbers($documentNumber);
+        $duplicatedCompany = Company::where('document_number', $cleanDocument)->first();
         return (bool) $duplicatedCompany;
     }
 
     private function updateCompany(Company $oldCompany, $newCompanyData)
     {
-        $oldCompany->document_number = $newCompanyData["document_number"];
+        $oldCompany->document_number = $this->clearNoNNumbers($newCompanyData["document_number"]);
         $oldCompany->social_name = $newCompanyData["social_name"];
         $oldCompany->legal_name = $newCompanyData["legal_name"];
         $oldCompany->creation_date = $newCompanyData["creation_date"];
@@ -251,5 +260,10 @@ class CompanyController extends Controller
         ];
 
         return $pagination;
+    }
+
+    private function clearNoNNumbers(string $str)
+    {
+        return preg_replace('~\D~', '', $str);
     }
 }
