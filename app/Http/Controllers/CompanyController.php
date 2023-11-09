@@ -32,6 +32,7 @@ class CompanyController extends Controller
 
         $searchResult = $companyQuery->get(
             [
+                "id",
                 "document_number",
                 "social_name",
                 "legal_name",
@@ -86,7 +87,8 @@ class CompanyController extends Controller
         }
 
         $companyData = $this->getCompanyData($validated['document_number']);
-        if (isset($companyData["type"]) && $companyData["type"] == "not_found") {
+
+        if (isset($companyData["type"])) {
             return response()->json([
                 'errors' => true,
                 'message' => 'Não foi possível validar os dados da empresa, verifique se o CNPJ enviado está correto',
@@ -152,12 +154,13 @@ class CompanyController extends Controller
             }
 
             $companyData = $this->getCompanyData($validated['document_number']);
-            if ($companyData["type"] && $companyData["type"] == "not_found") {
+            if (isset($companyData["type"])) {
                 return response()->json([
                     'errors' => true,
                     'message' => 'Não foi possível validar os dados da empresa, verifique se o CNPJ enviado está correto.',
                 ], 404);
             }
+
 
             $hasValidCnae = $this->validateCompanyData($companyData);
             if (!$hasValidCnae) {
@@ -168,7 +171,7 @@ class CompanyController extends Controller
             }
         }
 
-        return $this->updateCompany($oldCompany, $validated);
+        return $this->updateCompany($validated, $id);
     }
 
     public function destroy(string $id)
@@ -234,17 +237,18 @@ class CompanyController extends Controller
         return (bool) $duplicatedCompany;
     }
 
-    private function updateCompany(Company $oldCompany, $newCompanyData)
+    private function updateCompany($newCompanyData, string $id)
     {
-        $oldCompany->document_number = $this->clearNoNNumbers($newCompanyData["document_number"]);
-        $oldCompany->social_name = $newCompanyData["social_name"];
-        $oldCompany->legal_name = $newCompanyData["legal_name"];
-        $oldCompany->creation_date = $newCompanyData["creation_date"];
-        $oldCompany->responsible_email = $newCompanyData["responsible_email"];
-        $oldCompany->responsible_name = $newCompanyData["responsible_name"];
-        $oldCompany->save();
-
-        return $oldCompany;
+        $cleanDocument = $this->clearNoNNumbers($newCompanyData["document_number"]);
+        Company::where('id', $id)->update([
+            "document_number" => $cleanDocument,
+            "social_name" => $newCompanyData["social_name"],
+            "legal_name" => $newCompanyData["legal_name"],
+            "creation_date" => $newCompanyData["creation_date"],
+            "responsible_email" => $newCompanyData["responsible_email"],
+            "responsible_name" => $newCompanyData["responsible_name"],
+        ]);
+        return $newCompanyData;
     }
 
     private function buildPagination($page, $limit, $offset, $total, $result)
